@@ -5,6 +5,7 @@ import tileUrl from "./assets/tile.svg?no-inline";
 import pack1Url from "./assets/pack1.svg?no-inline";
 import pack2Url from "./assets/pack2.svg?no-inline";
 import pack3Url from "./assets/pack3.svg?no-inline";
+import clickSfx from "./assets/click.mp3?no-line";
 import "./style.css";
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -105,9 +106,19 @@ function openPack(pack: Pack): number {
   );
 }
 
+function playSound(url: string) {
+  const sound = new Audio(url);
+  sound.volume = 0.5;
+
+  void sound.play().catch((error) => {
+    console.warn("Could not play sound:", error);
+  });
+}
+
 image.addEventListener("click", function () {
   console.log("Clicked!");
   addCash(openPack(currentPack));
+  playSound(clickSfx);
 });
 
 function addCash(amount: number) {
