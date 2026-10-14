@@ -5,6 +5,7 @@ import tileUrl from "./assets/tile.svg?no-inline";
 import pack1Url from "./assets/pack1.svg?no-inline";
 import pack2Url from "./assets/pack2.svg?no-inline";
 import pack3Url from "./assets/pack3.svg?no-inline";
+import pack4Url from "./assets/pack4.svg?no-inline";
 import "./style.css";
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -70,6 +71,14 @@ const packUpgrades: Upgrade[] = [
     minCash: 50,
     maxCash: 400,
     imageUrl: pack3Url,
+    purchased: false,
+  },
+  {
+    name: "Pack 4",
+    cost: 5000000,
+    minCash: 500,
+    maxCash: 4000,
+    imageUrl: pack4Url,
     purchased: false,
   },
 ];
