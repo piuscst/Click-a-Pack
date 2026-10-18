@@ -2,10 +2,12 @@
 // even this tiny example demonstrates a separately deployed asset.
 // @deno-types="./asset-url.d.ts"
 import tileUrl from "./assets/tile.svg?no-inline";
+import basePackUrl from "./assets/basepack.svg?no-inline";
 import pack1Url from "./assets/pack1.svg?no-inline";
 import pack2Url from "./assets/pack2.svg?no-inline";
 import pack3Url from "./assets/pack3.svg?no-inline";
 import pack4Url from "./assets/pack4.svg?no-inline";
+import ripUrl from "./assets/rip.mp3?no-inline";
 import "./style.css";
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -16,11 +18,11 @@ heading.textContent = "D1 project";
 const image = document.createElement("img");
 image.src = tileUrl;
 image.alt = "A teal tile with a cream circle";
-image.width = 96;
-image.height = 96;
+image.width = 150;
+image.height = 300;
 
 const message = document.createElement("p");
-message.textContent = "Your project starts here.";
+message.textContent = "Click the pack!";
 
 interface Pack {
   minCash: number;
@@ -47,29 +49,29 @@ interface Passives extends PassiveUpgrades {
   owned: number;
 }
 
-const basePack = { minCash: 1, maxCash: 3 };
+const basePack = { minCash: 1, maxCash: 3, imageUrl: basePackUrl };
 const packUpgrades: Upgrade[] = [
   {
     name: "Pack 1",
     cost: 500,
-    minCash: 1,
-    maxCash: 10,
+    minCash: 5,
+    maxCash: 25,
     imageUrl: pack1Url,
     purchased: false,
   },
   {
     name: "Pack 2",
-    cost: 50000,
-    minCash: 5,
-    maxCash: 60,
+    cost: 10_000,
+    minCash: 50,
+    maxCash: 150,
     imageUrl: pack2Url,
     purchased: false,
   },
   {
     name: "Pack 3",
-    cost: 500000,
-    minCash: 50,
-    maxCash: 400,
+    cost: 100_000,
+    minCash: 100,
+    maxCash: 600,
     imageUrl: pack3Url,
     purchased: false,
   },
@@ -93,29 +95,29 @@ const passiveUpgrades: Passives[] = [
   },
   {
     name: "Card Scanner",
-    cashPerSecond: 8,
+    cashPerSecond: 12,
     cost: 500,
     description: "Scans cards and posts them online to sell",
     owned: 0,
   },
   {
     name: "Whatnot Streamer",
-    cashPerSecond: 15,
+    cashPerSecond: 30,
     cost: 1000,
     description: "Sells cards you pull for you online through Whatnot auctions",
     owned: 0,
   },
   {
     name: "Master Ripper",
-    cashPerSecond: 50,
-    cost: 10_000,
+    cashPerSecond: 165,
+    cost: 5_000,
     description: "Opens packs for you wayyy faster than your siblings",
     owned: 0,
   },
   {
     name: "Distributor Connection",
-    cashPerSecond: 300,
-    cost: 50_000,
+    cashPerSecond: 1_000,
+    cost: 25_000,
     description: "Get packs straight from the factory",
     owned: 0,
   },
@@ -124,6 +126,9 @@ const passiveUpgrades: Passives[] = [
 let cash: number = 0;
 let displayedCash: number = 0;
 let currentPack: Pack = basePack;
+
+image.src = basePackUrl;
+image.alt = "Base pack";
 
 const counter = document.createElement("h1");
 counter.textContent = "Cash: $0";
@@ -336,6 +341,33 @@ function gameLoop(now: number) {
 
 document.addEventListener("visibilitychange", () => {
   lastTime = performance.now();
+});
+
+function playRip() {
+  const sfx = new Audio(ripUrl);
+  sfx.volume = 0.1;
+  sfx.play();
+}
+
+image.addEventListener("click", function () {
+  playRip();
+
+  image.animate(
+    [
+      { transform: "rotate(0deg) scale(1)", filter: "brightness(1)" },
+      { transform: "rotate(-6deg) scale(0.95)", offset: 0.15 },
+      { transform: "rotate(6deg) scale(0.95)", offset: 0.3 },
+      { transform: "rotate(-4deg) scale(0.97)", offset: 0.45 },
+      { transform: "rotate(4deg) scale(0.97)", offset: 0.6 },
+      {
+        transform: "rotate(0deg) scale(1.12)",
+        filter: "brightness(1.6)",
+        offset: 0.8,
+      },
+      { transform: "rotate(0deg) scale(1)", filter: "brightness(1)" },
+    ],
+    { duration: 350, easing: "ease-out" },
+  );
 });
 
 requestAnimationFrame(gameLoop);

@@ -5,6 +5,8 @@
   align-items: center;
   min-height: 95vh;
   text-align: center;
+  background: #195672;
+  color: #f1f5f9;
 }
 
 .upgrade-row {
