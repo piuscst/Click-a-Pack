@@ -44,6 +44,7 @@ interface Upgrade extends Pack {
 interface Passives extends PassiveUpgrades {
   name: string;
   cost: number;
+  baseCost: number;
   button?: HTMLButtonElement;
   description?: string;
   owned: number;
@@ -90,6 +91,7 @@ const passiveUpgrades: Passives[] = [
     name: "Sibling Helper",
     cashPerSecond: 2,
     cost: 100,
+    baseCost: 100,
     description: "Opens packs for you",
     owned: 0,
   },
@@ -97,6 +99,7 @@ const passiveUpgrades: Passives[] = [
     name: "Card Scanner",
     cashPerSecond: 12,
     cost: 500,
+    baseCost: 500,
     description: "Scans cards and posts them online to sell",
     owned: 0,
   },
@@ -104,6 +107,7 @@ const passiveUpgrades: Passives[] = [
     name: "Whatnot Streamer",
     cashPerSecond: 30,
     cost: 1000,
+    baseCost: 1000,
     description: "Sells cards you pull for you online through Whatnot auctions",
     owned: 0,
   },
@@ -111,6 +115,7 @@ const passiveUpgrades: Passives[] = [
     name: "Master Ripper",
     cashPerSecond: 165,
     cost: 5_000,
+    baseCost: 5_000,
     description: "Opens packs for you wayyy faster than your siblings",
     owned: 0,
   },
@@ -118,6 +123,7 @@ const passiveUpgrades: Passives[] = [
     name: "Distributor Connection",
     cashPerSecond: 1_000,
     cost: 25_000,
+    baseCost: 25_000,
     description: "Get packs straight from the factory",
     owned: 0,
   },
@@ -132,6 +138,9 @@ image.alt = "Base pack";
 
 const counter = document.createElement("h1");
 counter.textContent = "Cash: $0";
+
+const amountGained = document.createElement("p");
+amountGained.textContent = "";
 
 const upgradeRow = document.createElement("div");
 upgradeRow.className = "upgrade-row";
@@ -156,7 +165,10 @@ for (const upgrade of packUpgrades) {
 
   button.addEventListener("click", () => {
     if (!upgrade.purchased) {
-      if (cash < upgrade.cost) return;
+      if (cash < upgrade.cost) {
+        amountGained.textContent = "Not Enough to Buy This Pack!";
+        return;
+      }
       cash -= upgrade.cost;
       upgrade.purchased = true;
       updateCounter();
@@ -188,6 +200,8 @@ for (const upgrade of passiveUpgrades) {
     cash -= upgrade.cost;
     upgrade.owned += 1;
 
+    upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.1, upgrade.owned));
+
     updateCounter();
   });
 
@@ -212,6 +226,7 @@ app.append(
   image,
   message,
   counter,
+  amountGained,
   upgradeRow,
   passiveCounter,
   passiveRow,
@@ -225,7 +240,11 @@ function openPack(pack: Pack): number {
 
 image.addEventListener("click", function () {
   console.log("Clicked!");
-  addCash(openPack(currentPack));
+  const gained = openPack(currentPack);
+  addCash(gained);
+
+  amountGained.textContent = `Sold For ${money(gained)}`;
+  soldAnimation();
 });
 
 function addCash(amount: number) {
@@ -347,6 +366,20 @@ function playRip() {
   const sfx = new Audio(ripUrl);
   sfx.volume = 0.1;
   sfx.play();
+}
+
+function soldAnimation() {
+  amountGained.animate(
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(1.5)", offset: 0.5 },
+      { transform: "scale(1)" },
+    ],
+    {
+      duration: 250,
+      easing: "ease-out",
+    },
+  );
 }
 
 image.addEventListener("click", function () {
